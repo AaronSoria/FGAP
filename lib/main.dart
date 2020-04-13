@@ -89,10 +89,6 @@ class _AssessmentsPageState extends State<AssessmentsPage> {
           Divider(height: 1, color: const Color(0xFFC7C7C7), thickness: 2),
           SizedBox(height: 20),
           NewsList(),
-          // Container(
-          //   width: double.infinity,
-          //   height: 400,
-          //   child: NewsList()),
           ],
       ),
       Icon(Icons.directions_transit),
@@ -101,10 +97,12 @@ class _AssessmentsPageState extends State<AssessmentsPage> {
 }
 
   _searchBox() {
-    return Material(
-      elevation: 2,
-      shadowColor: Colors.grey,
-      borderRadius: BorderRadius.all(Radius.circular(3)),
+    return Card(
+      elevation: 3.0,
+      
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0)
+      ),
       child: TextFormField(
         decoration: InputDecoration(
           prefixIcon: Icon(
@@ -113,14 +111,14 @@ class _AssessmentsPageState extends State<AssessmentsPage> {
           ),
           border: OutlineInputBorder(
             borderSide: BorderSide.none)),
-          ),
+      ),
     );
   }
   
 }
 
 class NewsList extends StatefulWidget{
-  NewsList({Key key, this.title}) : super(key: key);
+  NewsList({Key key, this.title, VoidCallback onLeadingPressed}) : super(key: key);
   final String title;
 
     @override
@@ -147,19 +145,42 @@ class _NewsListState extends State<NewsList> {
 
   }
  
- ListTile _buildItemsForListView(BuildContext context, int index) {
-      return ListTile(
-        title: Text(index.toString()), 
-        subtitle: Text(_newsArticles[index].title, style: TextStyle(fontSize: 18)),
-      );
+  Card _buildItemsForListView(BuildContext context, int index) {
+   return Card(
+      elevation: 3.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0)
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          color: Colors.white, 
+        ),
+        child: _cardItembody(_newsArticles[index].title),
+      ),
+    );
+  }
+
+  ListTile _cardItembody(String text){
+    return ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.5),
+        title: Container(
+          child: Text(
+          text,
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.normal)),
+        ),
+        trailing: Icon(Icons.keyboard_arrow_right, color: const Color(0xFF194B9C), size: 40.0));
   }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: ListView.builder(
+      child: ListView.separated(
           itemCount: _newsArticles.length,
           itemBuilder: _buildItemsForListView,
+          separatorBuilder: (BuildContext context, int index){
+            return SizedBox(height: 20);
+          },
         )
       );
   }
