@@ -1,8 +1,11 @@
 import 'package:fgap/custom_components/customDrawer.dart';
-import 'package:fgap/models/newArticleModel.dart';
+import 'package:fgap/custom_components/customerList.dart';
+import 'custom_components/customAppBar.dart';
+import 'custom_components/projectList.dart';
+import 'package:fgap/models/projectModel.dart';
+import 'models/customerModel.dart';
 import 'package:fgap/rest/webService.dart';
 import 'package:flutter/material.dart';
-import 'custom_components/customAppBar.dart';
 
 void main() => runApp(MyApp());
 
@@ -31,9 +34,83 @@ class AssessmentsPage extends StatefulWidget {
 class _AssessmentsPageState extends State<AssessmentsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final String apiKey = '7879e991a1dc4c1eb263f95ff00e23f5';
+  List<ProjectModel> _projects = [];
+  List<ProjectModel> _auxProjects = List<ProjectModel>();
+
+  List<CustomerModel> _customers = [];
+  List<CustomerModel> _auxCustomers = List<CustomerModel>();
+
+  String _filter;
+  int _tabIndex = 0;
 
   openNavigationDrawer() {
     _scaffoldKey.currentState.openDrawer();
+  }
+
+  populateProjects() {
+    Webservice().load(ProjectModel.all).then((projects) => {
+          setState(() =>
+              {_projects.addAll(projects), _auxProjects.addAll(projects)}),
+        });
+  }
+
+  populateCustomers() {
+    Webservice().load(CustomerModel.all).then((customers) => {
+          setState(() =>
+              {_customers.addAll(customers), _auxCustomers.addAll(customers)}),
+        });
+  }
+
+  onFilterTextChange(String value) {
+    _filter = value;
+    print(_filter);
+  }
+
+  onFilterTextEditingComplete() {
+    if (_filter != null) {
+      print(_tabIndex);
+      switch (_tabIndex){
+        case 0:
+          filterProjects();
+          break;
+        case 1:
+          filterCustomer();
+          break;
+      }
+    }
+  }
+
+  filterProjects(){
+    if (_filter.isNotEmpty) {
+      var result = _auxProjects.where((items) => items.title.contains(_filter)).toList();
+      setState(() => {_projects.clear(), _projects.addAll(result)});
+    } 
+    else {
+      setState(() => {_projects.clear(), _projects.addAll(_auxProjects)});
+    }
+  }
+
+  filterCustomer(){
+    if (_filter.isNotEmpty) {
+      var result = _auxCustomers.where((items) => items.name.contains(_filter)).toList();
+      setState(() => {_customers.clear(), _customers.addAll(result)});
+    } 
+    else {
+      setState(() => {_customers.clear(), _customers.addAll(_auxCustomers)});
+    }
+  }
+
+  onTabIndexChange(int value){
+    print(value);
+    _tabIndex = value;
+    _filter = '';
+  }
+
+  @override
+  void initState() {
+    populateProjects();
+    populateCustomers();
+    super.initState();
   }
 
   @override
@@ -70,6 +147,7 @@ class _AssessmentsPageState extends State<AssessmentsPage> {
       indicatorColor: const Color(0xFF194B9C),
       labelColor: const Color(0xFF000000),
       unselectedLabelColor: const Color(0xFFC7C7C7),
+      onTap: (index) => onTabIndexChange(index),
       tabs: [
         Tab(text: 'Projects'),
         Tab(text: 'Customers'),
@@ -77,112 +155,49 @@ class _AssessmentsPageState extends State<AssessmentsPage> {
     );
   }
 
-  _assessmentsTabBody(){
-  return TabBarView(
-    children: [
-      Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 20),
-          _searchBox(),
-          SizedBox(height: 20),
-          Divider(height: 1, color: const Color(0xFFC7C7C7), thickness: 2),
-          SizedBox(height: 20),
-          NewsList(),
+  _assessmentsTabBody() {
+    return TabBarView(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 20),
+            _searchBox(),
+            SizedBox(height: 20),
+            Divider(height: 1, color: const Color(0xFFC7C7C7), thickness: 2),
+            SizedBox(height: 20),
+            ProjectList(projects: _projects),
           ],
-      ),
-      Icon(Icons.directions_transit),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 20),
+            _searchBox(),
+            SizedBox(height: 20),
+            Divider(height: 1, color: const Color(0xFFC7C7C7), thickness: 2),
+            SizedBox(height: 20),
+            CustomerList(customers: _customers),
+          ],
+        ),
       ],
     );
-}
+  }
 
   _searchBox() {
     return Card(
       elevation: 3.0,
-      
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5.0)
-      ),
-      child: TextFormField(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+      child: TextField(
+        onEditingComplete: () => onFilterTextEditingComplete(),
+        onChanged: (value) => onFilterTextChange(value),
         decoration: InputDecoration(
-          prefixIcon: Icon(
-            Icons.search,
-            color: const Color(0xFF194B9C),
-          ),
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none)),
+            prefixIcon: Icon(
+              Icons.search,
+              color: const Color(0xFF194B9C),
+            ),
+            border: OutlineInputBorder(borderSide: BorderSide.none)),
       ),
     );
   }
-  
-}
-
-class NewsList extends StatefulWidget{
-  NewsList({Key key, this.title, VoidCallback onLeadingPressed}) : super(key: key);
-  final String title;
-
-    @override
-  _NewsListState createState() => _NewsListState();
-}
-
-class _NewsListState extends State<NewsList> {
-
-  List<NewsArticleModel> _newsArticles = List<NewsArticleModel>(); 
-
-  @override
-  void initState() {
-    super.initState();
-    _populateNewsArticles(); 
-  }
-
-  void _populateNewsArticles() {
-   
-    Webservice().load(NewsArticleModel.all).then((newsArticles) => {
-      setState(() => {
-        _newsArticles = newsArticles
-      })
-    });
-
-  }
- 
-  Card _buildItemsForListView(BuildContext context, int index) {
-   return Card(
-      elevation: 3.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5.0)
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-          color: Colors.white, 
-        ),
-        child: _cardItembody(_newsArticles[index].title),
-      ),
-    );
-  }
-
-  ListTile _cardItembody(String text){
-    return ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.5),
-        title: Container(
-          child: Text(
-          text,
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.normal)),
-        ),
-        trailing: Icon(Icons.keyboard_arrow_right, color: const Color(0xFF194B9C), size: 40.0));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.separated(
-          itemCount: _newsArticles.length,
-          itemBuilder: _buildItemsForListView,
-          separatorBuilder: (BuildContext context, int index){
-            return SizedBox(height: 20);
-          },
-        )
-      );
-  }
-
 }

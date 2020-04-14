@@ -2,30 +2,30 @@ import 'dart:convert';
 import 'package:fgap/rest/webService.dart';
 import 'package:fgap/utils/constants.dart';
 
-class NewsArticleModel {
+class ProjectModel {
   
   final String title; 
   final String descrption; 
   final String urlToImage; 
 
-  NewsArticleModel({this.title, this.descrption, this.urlToImage});
+  ProjectModel({this.title, this.descrption, this.urlToImage});
 
-  factory NewsArticleModel.fromJson(Map<String,dynamic> json) {
-    return NewsArticleModel(
+  factory ProjectModel.fromJson(Map<String,dynamic> json) {
+    return ProjectModel(
       title: json['title'], 
       descrption: json['description']
     );
   }
 
 
- static Resource<List<NewsArticleModel>> get all {
+ static Resource<List<ProjectModel>> get all {
     
     return Resource(
       url: Constants.HEADLINE_NEWS_URL,
       parse: (response) {
         final result = json.decode(response.body); 
         Iterable list = result['articles'];
-        return list.map((model) => NewsArticleModel.fromJson(model)).toList();
+        return list.map((model) => ProjectModel.fromJson(model)).toList();
       }
     );
 
