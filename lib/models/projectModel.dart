@@ -4,11 +4,12 @@ import 'package:fgap/utils/constants.dart';
 
 class ProjectModel {
   
-  final String title; 
+  final String title;
+  final String customerName; 
   final String descrption; 
-  final String urlToImage; 
+  final String address; 
 
-  ProjectModel({this.title, this.descrption, this.urlToImage});
+  ProjectModel({this.title, this.customerName, this.descrption, this.address});
 
   factory ProjectModel.fromJson(Map<String,dynamic> json) {
     return ProjectModel(

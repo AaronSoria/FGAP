@@ -1,4 +1,5 @@
 import 'package:fgap/pages/assessmentsPage.dart';
+import 'package:fgap/pages/projectHistorySummary.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
