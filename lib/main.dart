@@ -1,5 +1,5 @@
 import 'package:fgap/pages/assessmentsPage.dart';
-import 'package:fgap/pages/projectHistorySummary.dart';
+import 'package:fgap/pages/projectHistorySummaryPage.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: AssessmentsPage(title: 'Flutter Demo Home Page'),
+      home: ProjectHistorySummaryPage(title: 'Flutter Demo Home Page'),
     );
   }
 }

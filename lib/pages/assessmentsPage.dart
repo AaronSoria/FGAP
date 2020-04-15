@@ -27,6 +27,13 @@ class _AssessmentsPageState extends State<AssessmentsPage> {
   String _filter;
   int _tabIndex = 0;
 
+  @override
+  void initState() {
+    populateProjects();
+    populateCustomers();
+    super.initState();
+  }
+
   openNavigationDrawer() {
     _scaffoldKey.currentState.openDrawer();
   }
@@ -88,13 +95,6 @@ class _AssessmentsPageState extends State<AssessmentsPage> {
     print(value);
     _tabIndex = value;
     _filter = '';
-  }
-
-  @override
-  void initState() {
-    populateProjects();
-    populateCustomers();
-    super.initState();
   }
 
   @override
