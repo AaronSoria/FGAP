@@ -26,17 +26,19 @@ class _ProjectHistorySummaryListState extends State<ProjectHistorySummaryList> {
       });
   }
  
-  Card _buildItemsForListView(BuildContext context, int index) {
-   return Card(
-     elevation: 0,    
-     child: _cardItembody(_projectItems[index]),
+
+  GestureDetector _buildItemsForListView(BuildContext context, int index) {
+
+    return GestureDetector(    
+     child: Padding(
+       padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+       child: _cardItembody(_projectItems[index]),
+     )
     );
   }
 
-  ListTile _cardItembody(ProjectItemModel projectItem){
-    return ListTile(
-        contentPadding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-        title: Row(
+  _cardItembody(ProjectItemModel projectItem){
+    return Row(
           crossAxisAlignment : CrossAxisAlignment.start,
           children: <Widget>[
             ClipRRect(
@@ -49,7 +51,8 @@ class _ProjectHistorySummaryListState extends State<ProjectHistorySummaryList> {
                 ),
             ),
             SizedBox(width: 20),
-            Column(
+            Expanded( 
+              child: Column(
               crossAxisAlignment : CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
@@ -80,34 +83,31 @@ class _ProjectHistorySummaryListState extends State<ProjectHistorySummaryList> {
                   )
                 ),              
               ],
-            )
+              ) 
+            ),
           ]
-        )
-      );
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(5,0,5,0),
-      height: (_projectItems.length <= 3)? _projectItems.length * 133.33 : 480.00,
-      decoration: BoxDecoration(
-        boxShadow: [BoxShadow(blurRadius: 3.0, color: Colors.grey)],
-        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-        color: Colors.white, 
-      ),
+
+
+@override
+Widget build(BuildContext context) {
+  return Expanded(
+    child: Card(
       child: ListView.separated(
         padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
         itemCount: _projectItems.length,
         itemBuilder: _buildItemsForListView,
-        separatorBuilder: (BuildContext context, int index){
-          return Container (
-            padding:  EdgeInsets.fromLTRB(5,0,5,0),
-            child: Divider(height: 1, color: const Color(0xFFC7C7C7), thickness: 2)
-            ); 
-          },
-        )
-    );
-  }
+        separatorBuilder: (BuildContext context, int index) {
+          return Container(
+              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+              child: Divider(
+                  height: 1, color: const Color(0xFFC7C7C7), thickness: 2));
+        },
+      ),
+    ),
+  );
+}
 
 }
